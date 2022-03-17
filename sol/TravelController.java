@@ -1,11 +1,13 @@
 package sol;
 
-import src.City;
-import src.ITravelController;
-import src.Transport;
+import src.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class TravelController implements ITravelController<City, Transport> {
 
@@ -13,6 +15,8 @@ public class TravelController implements ITravelController<City, Transport> {
     // Are there any advantages to declaring a field as a specific type rather than the interface?
     // If this were of type IGraph, could you access methods in TravelGraph not declared in IGraph?
     // Hint: perhaps you need to define a method!
+
+    // Instantiates a new Graph object in the graph field
     private TravelGraph graph;
 
     public TravelController() {
@@ -20,11 +24,11 @@ public class TravelController implements ITravelController<City, Transport> {
 
     @Override
     public String load(String citiesFile, String transportFile) {
-        // TODO: instantiate a new Graph object in the graph field
+        // creates an instance of the TravelCSVParser
+        this.graph = new TravelGraph();
+        TravelCSVParser parser = new TravelCSVParser();
 
-        // TODO: create an instance of the TravelCSVParser
-
-        // TODO: create a variable of type Function<Map<String, String>, Void>
+        // Creates a variable of type Function<Map<String, String>, Void>
         //       that will build the nodes in a graph. Keep in mind
         //       that the input to this function is a hashmap that relates the
         //       COLUMN NAMES of the csv to the VALUE IN THE COLUMN of the csv.
@@ -32,14 +36,36 @@ public class TravelController implements ITravelController<City, Transport> {
         //       information from the csv needed to create an edge and uses that to
         //       build the edge on the graph.
 
-        // TODO: create another variable of type Function<Map<String, String>, Void> which will
+        Function<Map<String, String>, Void> addVertex = map -> {
+            this.graph.addVertex(new City(map.get("name")));
+            return null; // need explicit return null to account for Void type
+        };
+
+        // Creates another variable of type Function<Map<String, String>, Void> which will
         //  build connections between nodes in a graph.
+        Function<Map<String, String>, Void> addEdge = map -> {
+            this.graph.addEdge(new City(map.get("name")), new Transport(this.graph.getCityByName(map.get("source")),
+                    this.graph.getCityByName(map.get("destination")), TransportType.fromString(map.get("type")),
+                    Double.parseDouble(map.get("price")), Double.parseDouble(map.get("minutes"))));
+            return null; // need explicit return null to account for Void type
+        };
 
-        // TODO: call parseLocations with the first Function variable as an argument and the right
-        //  file
 
-        // TODO: call parseTransportation with the second Function variable as an argument and
-        //  the right file
+        // call parseLocations with the first Function variable as an argument and the right file
+        try {
+            // pass in string for CSV and function to create City (vertex) using city name
+            parser.parseLocations(citiesFile, addVertex);
+        } catch (IOException e) {
+            return "Error parsing file: " + citiesFile;
+        }
+
+        // call parseTransportation with the second Function variable as an argument and the right file
+        try {
+            // pass in string for CSV and function to create City (vertex) using city name
+            parser.parseLocations(transportFile, addEdge);
+        } catch (IOException e) {
+            return "Error parsing file: " + transportFile;
+        }
 
         // hint: note that parseLocations and parseTransportation can
         //       throw IOExceptions. How can you handle these calls cleanly?
@@ -49,19 +75,25 @@ public class TravelController implements ITravelController<City, Transport> {
 
     @Override
     public List<Transport> fastestRoute(String source, String destination) {
-        // TODO: implement this method!
-        return new ArrayList<>();
+        Function<Transport, Double> edgeWeight = edge -> edge.getMinutes();
+
+        Dijkstra<City, Transport>  dijkstra = new Dijkstra<>();
+        return dijkstra.getShortestPath(
+                this.graph, this.graph.getCityByName(source), this.graph.getCityByName(destination), edgeWeight);
     }
 
     @Override
     public List<Transport> cheapestRoute(String source, String destination) {
-        // TODO: implement this method!
-        return new ArrayList<>();
+        Function<Transport, Double> edgeWeight = edge -> edge.getPrice();
+
+        Dijkstra<City, Transport>  dijkstra = new Dijkstra<>();
+        return dijkstra.getShortestPath(
+                this.graph, this.graph.getCityByName(source), this.graph.getCityByName(destination), edgeWeight);
     }
 
     @Override
     public List<Transport> mostDirectRoute(String source, String destination) {
-        // TODO: implement this method!
-        return new ArrayList<>();
+        BFS<City, Transport>  bfs = new BFS();
+        return bfs.getPath(this.graph, this.graph.getCityByName(source), this.graph.getCityByName(destination));
     }
 }

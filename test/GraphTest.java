@@ -5,6 +5,9 @@ import test.simple.SimpleEdge;
 import test.simple.SimpleGraph;
 import test.simple.SimpleVertex;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -49,7 +52,6 @@ public class GraphTest {
         this.graph.addVertex(this.b);
         this.graph.addVertex(this.c);
 
-        // create and insert edges
         this.edgeAB = new SimpleEdge(1, this.a, this.b);
         this.edgeBC = new SimpleEdge(1, this.b, this.c);
         this.edgeCA = new SimpleEdge(1, this.c, this.a);
@@ -64,13 +66,42 @@ public class GraphTest {
     @Test
     public void testGetVertices() {
         this.createSimpleGraph();
-
-        // test getVertices to check this method AND insertVertex
         assertEquals(this.graph.getVertices().size(), 3);
         assertTrue(this.graph.getVertices().contains(this.a));
         assertTrue(this.graph.getVertices().contains(this.b));
         assertTrue(this.graph.getVertices().contains(this.c));
+        //do we need edge cases
     }
 
+    @Test
+    public void testGetEdgeSource() {
+        this.createSimpleGraph();
+        assertEquals(this.graph.getEdgeSource(edgeAB), this.a);
+        assertEquals(this.graph.getEdgeSource(edgeBC), this.b);
+        assertEquals(this.graph.getEdgeSource(edgeAC), this.a);
+    }
+
+    @Test
+    public void testGetEdgeTarget() {
+        this.createSimpleGraph();
+        assertEquals(this.graph.getEdgeTarget(edgeAB), this.b);
+        assertEquals(this.graph.getEdgeTarget(edgeBC), this.c);
+        assertEquals(this.graph.getEdgeTarget(edgeAC), this.c);
+    }
+
+    @Test
+    public void testGetOutgoingEdges() {
+        this.createSimpleGraph();
+        HashSet<SimpleEdge> setA = new HashSet<>();
+        setA.add(this.edgeAB);
+        setA.add(this.edgeAC);
+        HashSet<SimpleEdge> setB = new HashSet<>();
+        setB.add(this.edgeBC);
+        HashSet<SimpleEdge> setC = new HashSet<>();
+        setC.add(this.edgeCA);
+        assertEquals(this.graph.getOutgoingEdges(this.a), setA);
+        assertEquals(this.graph.getOutgoingEdges(this.b), setB);
+        assertEquals(this.graph.getOutgoingEdges(this.c), setC);
+    }
     // TODO: write more tests + make sure you test all the cases in your testing plan!
 }
