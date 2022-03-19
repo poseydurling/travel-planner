@@ -74,5 +74,16 @@ public class BFSTest {
         assertEquals(path.size(), 2);
     }
 
+    @Test
+    public void testBFS(){
+        this.makeSimpleGraph();
+        BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
+        List<SimpleEdge> path = bfs.getPath(this.graph, this.a, this.b);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path), 1.0, DELTA);
+        assertEquals(path.size(), 1);
+    //test for cycles
+        //loadCVS.transportation (or cities)
+        //check length of path, add edge connecting 3 to 5, then 1,2,5 or 1,3,5 is a correct path, but distance is 2
+    }
     // TODO: write more tests + make sure you test all the cases in your testing plan!
 }

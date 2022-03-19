@@ -84,5 +84,6 @@ public class DijkstraTest {
         assertEquals(2, path.size());
     }
 
+    //loadCVS.transportation (or cities)
     // TODO: write more tests + make sure you test all the cases in your testing plan!
 }

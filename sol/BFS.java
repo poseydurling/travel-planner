@@ -19,16 +19,20 @@ public class BFS<V, E> implements IBFS<V, E> {
     public List<E> getPath(IGraph<V, E> graph, V start, V end) {
         V currentNode = end;
         LinkedList<E> queue = new LinkedList<>();
+        queue.addAll(graph.getOutgoingEdges(start));
         HashSet<E> edgesVisited = new HashSet<>();
         LinkedList<E> transports = new LinkedList<>();
         while(!queue.isEmpty()){
-            E currentPath = queue.remove();
+            E currentPath = queue.poll();
             if(edgesVisited.contains(currentPath)){
                 continue;
             }
             edgesVisited.add(currentPath);
             if(!this.hashMap.containsKey(graph.getEdgeTarget(currentPath))){
                 this.hashMap.put(graph.getEdgeTarget(currentPath), currentPath);
+            }
+            if(!(graph.getEdgeTarget(currentPath).equals(end))){
+                queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
             }
         }
         while(currentNode != start){
@@ -38,7 +42,6 @@ public class BFS<V, E> implements IBFS<V, E> {
         }
         return transports;
     }
-
 
     public E getCityByName(String name){
         return this.hashMap.get(name);
