@@ -17,8 +17,6 @@ import static org.junit.Assert.assertEquals;
  * You are welcome to write more tests using the Simple classes, but you will not be graded on
  * those.
  *
- * TODO: Recreate the test below for the City and Transport classes
- * TODO: Expand on your tests, accounting for basic cases and edge cases
  */
 public class BFSTest {
 
@@ -30,7 +28,12 @@ public class BFSTest {
     private SimpleVertex d;
     private SimpleVertex e;
     private SimpleVertex f;
+    private SimpleVertex NYC;
+    private SimpleVertex BOS;
+    private SimpleVertex PROV;
     private SimpleGraph graph;
+    private SimpleGraph graph1;
+    private SimpleGraph graph2;
 
     /**
      * Creates a simple graph.
@@ -38,7 +41,6 @@ public class BFSTest {
      * Normally, we'd like to use @Before, but because each test may require a different setup,
      * we manually call the setup method at the top of the test.
      *
-     * TODO: create more setup methods!
      */
     public void makeSimpleGraph() {
         this.graph = new SimpleGraph();
@@ -65,6 +67,61 @@ public class BFSTest {
         this.graph.addEdge(this.f, new SimpleEdge(100, this.f, this.e));
     }
 
+    /**
+     * Creates a SimpleGraph that replicates the graph in the project handout.
+     *
+     */
+    public void makeGraph1(){
+        this.graph1 = new SimpleGraph();
+
+        this.NYC = new SimpleVertex("NYC");
+        this.BOS = new SimpleVertex("Boston");
+        this.PROV = new SimpleVertex("Providence");
+
+        this.graph1.addVertex(this.NYC);
+        this.graph1.addVertex(this.BOS);
+        this.graph1.addVertex(this.PROV);
+
+        this.graph1.addEdge(this.NYC, new SimpleEdge(1, this.NYC, this.BOS));
+        this.graph1.addEdge(this.NYC, new SimpleEdge(1, this.NYC, this.PROV));
+        this.graph1.addEdge(this.BOS, new SimpleEdge(1, this.BOS, this.NYC));
+        this.graph1.addEdge(this.BOS, new SimpleEdge(1, this.BOS, this.PROV));
+        this.graph1.addEdge(this.PROV, new SimpleEdge(1, this.PROV, this.BOS));
+    }
+
+    /**
+     * Creates a SimpleGraph that checks for infinite loops.
+     *
+     */
+    public void makeGraph2(){
+        this.graph2 = new SimpleGraph();
+
+        this.a = new SimpleVertex("a");
+        this.b = new SimpleVertex("b");
+        this.c = new SimpleVertex("c");
+        this.d = new SimpleVertex("d");
+        this.e = new SimpleVertex("e");
+
+        this.graph2.addVertex(this.a);
+        this.graph2.addVertex(this.b);
+        this.graph2.addVertex(this.c);
+        this.graph2.addVertex(this.d);
+        this.graph2.addVertex(this.e);
+
+        this.graph2.addEdge(this.a, new SimpleEdge(1, this.a, this.b));
+        this.graph2.addEdge(this.b, new SimpleEdge(1, this.b, this.c));
+        this.graph2.addEdge(this.c, new SimpleEdge(1, this.c, this.d));
+        this.graph2.addEdge(this.d, new SimpleEdge(1, this.d, this.b));
+        this.graph2.addEdge(this.d, new SimpleEdge(1, this.c, this.e));
+        this.graph2.addEdge(this.d, new SimpleEdge(1, this.e, this.b));
+
+        // do we need to do other weights?
+    }
+
+    /**
+     * A basic test given to us in the stencil code.
+     *
+     */
     @Test
     public void testBasicBFS() {
         this.makeSimpleGraph();
@@ -74,16 +131,87 @@ public class BFSTest {
         assertEquals(path.size(), 2);
     }
 
+    /**
+     * A second test given to us in the stencil code.
+     *
+     */
     @Test
     public void testBFS(){
         this.makeSimpleGraph();
+
         BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
         List<SimpleEdge> path = bfs.getPath(this.graph, this.a, this.b);
         assertEquals(SimpleGraph.getTotalEdgeWeight(path), 1.0, DELTA);
         assertEquals(path.size(), 1);
-    //test for cycles
-        //loadCVS.transportation (or cities)
-        //check length of path, add edge connecting 3 to 5, then 1,2,5 or 1,3,5 is a correct path, but distance is 2
+        //loadCVS.transportation (or cities) - test objects
     }
-    // TODO: write more tests + make sure you test all the cases in your testing plan!
+
+    /**
+     * Tests graph1: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
+     * (going from NYC to NYC), etc. Tests using both size and objects.
+     *
+     */
+    @Test
+    public void testGraph1(){
+        this.makeGraph1();
+
+        BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
+        List<SimpleEdge> path = bfs.getPath(this.graph1, this.NYC, this.PROV);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path), 1.0, DELTA);
+        assertEquals(path.size(), 1);
+
+        BFS<SimpleVertex, SimpleEdge> bfs2 = new BFS<>();
+        List<SimpleEdge> path2 = bfs2.getPath(this.graph1, this.PROV, this.NYC);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path2), 2.0, DELTA);
+        assertEquals(path2.size(), 2);
+        assertEquals(bfs2.getPath(this.graph1, this.PROV, this.NYC), path2);
+
+        BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
+        List<SimpleEdge> path3 = bfs3.getPath(this.graph1, this.NYC, this.NYC);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path3), 0.0, DELTA);
+        assertEquals(path3.size(), 0);
+        assertEquals(bfs3.getPath(this.graph1, this.NYC, this.NYC), path3);
+    }
+
+    /**
+     * Tests graph2: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
+     * (going from NYC to NYC), when there are two possible paths, etc. Tests using both size and objects.
+     *
+     */
+    @Test
+    public void testGraph2(){
+        this.makeGraph2();
+
+        /*BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
+        List<SimpleEdge> path = bfs.getPath(this.graph2, this.a, this.b);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path), 1.0, DELTA);
+        assertEquals(path.size(), 1);
+        assertEquals(bfs.getPath(this.graph2, this.a, this.b), path);
+
+        BFS<SimpleVertex, SimpleEdge> bfs2 = new BFS<>();
+        List<SimpleEdge> path2 = bfs2.getPath(this.graph2, this.c, this.b);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path2), 2.0, DELTA);
+        assertEquals(path2.size(), 2);
+        assertEquals(bfs2.getPath(this.graph2, this.c, this.b), path2);*/
+
+        BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
+        List<SimpleEdge> path3 = bfs3.getPath(this.graph2, this.d, this.c);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path3), 2.0, DELTA);
+        assertEquals(path3.size(), 2);
+
+        //test no possible paths
+
+        /*BFS<SimpleVertex, SimpleEdge> bfs4 = new BFS<>();
+        List<SimpleEdge> path4 = bfs4.getPath(this.graph2, this.c, this.b);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path4), 2.0, DELTA);
+        assertEquals(path4.size(), 2);
+
+        //do we need to test getShortestPath
+
+        BFS<SimpleVertex, SimpleEdge> bfs5 = new BFS<>();
+        List<SimpleEdge> path6 = bfs5.getPath(this.graph2, this.a, this.a);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path6), 0.0, DELTA);
+        assertEquals(path6.size(), 0);
+        assertEquals(bfs5.getPath(this.graph2, this.a, this.a), path6);*/
+    }
 }
