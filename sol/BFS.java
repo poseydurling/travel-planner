@@ -52,9 +52,9 @@ public class BFS<V, E> implements IBFS<V, E> {
         LinkedList<E> transports = new LinkedList<>();
         while(!queue.isEmpty()){
             E currentPath = queue.poll();
-
             if(edgesVisited.contains(currentPath)){
-                continue;
+                return new ArrayList<>();
+                //continue;
             }
             edgesVisited.add(currentPath);
             if(!this.hashMap.containsKey(graph.getEdgeTarget(currentPath))){

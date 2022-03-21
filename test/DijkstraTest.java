@@ -21,8 +21,6 @@ import static org.junit.Assert.assertTrue;
  * You are welcome to write more tests using the Simple classes, but you will not be graded on
  * those.
  *
- * TODO: Recreate the test below for the City and Transport classes
- * TODO: Expand on your tests, accounting for basic cases and edge cases
  */
 public class DijkstraTest {
 
@@ -46,7 +44,6 @@ public class DijkstraTest {
      * Normally, we'd like to use @Before, but because each test may require a different setup,
      * we manually call the setup method at the top of the test.
      *
-     * TODO: create more setup methods!
      */
     private void createSimpleGraph() {
         this.graph = new SimpleGraph();
@@ -88,7 +85,7 @@ public class DijkstraTest {
         this.graph1.addVertex(this.PROV);
 
         this.graph1.addEdge(this.NYC, new SimpleEdge(50, this.NYC, this.BOS));
-        this.graph1.addEdge(this.NYC, new SimpleEdge(225, this.NYC, this.PROV));
+        this.graph1.addEdge(this.NYC, new SimpleEdge(250, this.NYC, this.PROV));
         this.graph1.addEdge(this.BOS, new SimpleEdge(50, this.BOS, this.NYC));
         this.graph1.addEdge(this.BOS, new SimpleEdge(150, this.BOS, this.PROV));
         this.graph1.addEdge(this.PROV, new SimpleEdge(150, this.PROV, this.BOS));
@@ -113,11 +110,12 @@ public class DijkstraTest {
         this.graph2.addVertex(this.d);
         this.graph2.addVertex(this.e);
 
-        this.graph2.addEdge(this.a, new SimpleEdge(1, this.a, this.b));
+        this.graph2.addEdge(this.a, new SimpleEdge(20, this.a, this.b));
         this.graph2.addEdge(this.b, new SimpleEdge(1, this.b, this.c));
         this.graph2.addEdge(this.c, new SimpleEdge(1, this.c, this.d));
-        this.graph2.addEdge(this.d, new SimpleEdge(1, this.d, this.b));
-        this.graph2.addEdge(this.d, new SimpleEdge(100, this.c, this.e));
+        this.graph2.addEdge(this.d, new SimpleEdge(10, this.d, this.b));
+        this.graph2.addEdge(this.d, new SimpleEdge(10, this.c, this.e));
+        this.graph2.addEdge(this.d, new SimpleEdge(1, this.e, this.b));
     }
 
     /**
@@ -143,74 +141,109 @@ public class DijkstraTest {
     }
 
     /**
-     * Tests graph1: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
+     * TESTS FOR GRAPH1: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
      * (going from NYC to NYC), when there are two possible paths, etc. Tests using both size and objects.
      *
      */
     @Test
-    public void testGraph1(){
+    public void testNYCPROV(){
         this.makeGraph1();
 
-        BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
-        List<SimpleEdge> path = bfs.getPath(this.graph1, this.NYC, this.PROV);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path), 225.0, DELTA);
-        assertEquals(path.size(), 1);
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph1, this.NYC, this.PROV, edgeWeightCalculation);
+        assertEquals(200, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(2, path.size());
+    }
 
-        /*BFS<SimpleVertex, SimpleEdge> bfs2 = new BFS<>();
-        List<SimpleEdge> path2 = bfs2.getPath(this.graph1, this.PROV, this.NYC);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path2), 1.0, DELTA);
-        assertEquals(path2.size(), 2);
-        assertEquals(bfs2.getPath(this.graph1, this.PROV, this.NYC), path2);
-        //fix this*/
+    @Test
+    public void testPROVNYC(){
+        this.makeGraph1();
 
-        BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
-        List<SimpleEdge> path3 = bfs3.getPath(this.graph1, this.NYC, this.NYC);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path3), 0.0, DELTA);
-        assertEquals(path3.size(), 0);
-        assertEquals(bfs3.getPath(this.graph1, this.NYC, this.NYC), path3);
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph1, this.PROV, this.NYC, edgeWeightCalculation);
+        assertEquals(200, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(2, path.size());
+    }
+
+    @Test
+    public void NYCNYC(){
+        this.makeGraph1();
+
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph1, this.NYC, this.NYC, edgeWeightCalculation);
+        assertEquals(0, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(0, path.size());
     }
 
     /**
-     * Tests graph2: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
+     * TESTS FOR GRAPH2: classic cases with a size of one, going in a circle (testing for infinite loops), edge cases
      * (going from a to a), when there are two possible paths, etc. Tests using both size and objects.
      *
      */
     @Test
-    public void testGraph2(){
+    public void testAB(){
         this.makeGraph2();
 
-        BFS<SimpleVertex, SimpleEdge> bfs = new BFS<>();
-        List<SimpleEdge> path = bfs.getPath(this.graph2, this.a, this.b);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path), 1.0, DELTA);
-        assertEquals(path.size(), 1);
-        assertEquals(bfs.getPath(this.graph2, this.a, this.b), path);
-
-        BFS<SimpleVertex, SimpleEdge> bfs2 = new BFS<>();
-        List<SimpleEdge> path2 = bfs2.getPath(this.graph2, this.c, this.b);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path2), 2.0, DELTA);
-        assertEquals(path2.size(), 2);
-        assertEquals(bfs2.getPath(this.graph2, this.c, this.b), path2);
-
-        BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
-        List<SimpleEdge> path3 = bfs3.getPath(this.graph2, this.d, this.c);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path3), 2.0, DELTA);
-        assertEquals(path3.size(), 2);
-
-        /*BFS<SimpleVertex, SimpleEdge> bfs4 = new BFS<>();
-        List<SimpleEdge> path4 = bfs4.getPath(this.graph2, this.a, this.b);
-        List<SimpleEdge> path5 = bfs4.getPath(this.graph2, this.d, this.b);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path4), 2.0, DELTA);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path5), 2.0, DELTA);
-        assertEquals(path4.size(), 1);
-        assertEquals(bfs4.getPath(this.graph2, this.a, this.b), path4);
-        assertEquals(bfs4.getPath(this.graph2, this.d, this.b), path5);
-        //fix this and do we need to use ||*/
-
-        BFS<SimpleVertex, SimpleEdge> bfs5 = new BFS<>();
-        List<SimpleEdge> path6 = bfs5.getPath(this.graph2, this.a, this.a);
-        assertEquals(SimpleGraph.getTotalEdgeWeight(path6), 0.0, DELTA);
-        assertEquals(path6.size(), 0);
-        assertEquals(bfs5.getPath(this.graph2, this.a, this.a), path6);
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph2, this.a, this.b, edgeWeightCalculation);
+        assertEquals(20, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(1, path.size());
     }
-    //loadCVS.transportation (or cities)
+
+    @Test
+    public void testAA(){
+        this.makeGraph2();
+
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph2, this.a, this.a, edgeWeightCalculation);
+        assertEquals(0, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(0, path.size());
+    }
+
+    @Test
+    public void testCB(){
+        this.makeGraph2();
+
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph2, this.c, this.b, edgeWeightCalculation);
+        assertEquals(11, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(2, path.size());
+    }
+
+    //NOT WORKING
+    @Test
+    public void testDC(){
+        this.makeGraph2();
+
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph2, this.d, this.c, edgeWeightCalculation);
+        assertEquals(11, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(2, path.size());
+    }
+
+    @Test
+    public void testEA(){
+        this.makeGraph2();
+
+        IDijkstra<SimpleVertex, SimpleEdge> dijkstra = new Dijkstra<>();
+        Function<SimpleEdge, Double> edgeWeightCalculation = e -> e.weight;
+        List<SimpleEdge> path =
+                dijkstra.getShortestPath(this.graph2, this.e, this.a, edgeWeightCalculation);
+        assertEquals(0, SimpleGraph.getTotalEdgeWeight(path), DELTA);
+        assertEquals(0, path.size());
+    }
 }

@@ -199,7 +199,7 @@ public class BFSTest {
     }
 
     @Test
-    public void testPathAA(){
+    public void testAA(){
         this.makeGraph2();
 
         BFS<SimpleVertex, SimpleEdge> bfs5 = new BFS<>();
@@ -210,7 +210,7 @@ public class BFSTest {
     }
 
     @Test
-    public void testPathCB(){
+    public void testCB(){
         this.makeGraph2();
 
         BFS<SimpleVertex, SimpleEdge> bfs2 = new BFS<>();
@@ -220,8 +220,9 @@ public class BFSTest {
         assertEquals(bfs2.getPath(this.graph2, this.c, this.b), path2);
     }
 
+    //NOT WORKING
     @Test
-    public void testPathDC(){
+    public void testDC(){
         this.makeGraph2();
 
         BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
@@ -230,7 +231,14 @@ public class BFSTest {
         assertEquals(path3.size(), 2);
     }
 
-    //test no possible paths
+    //NOT WORKING - test no possible paths
+    @Test
+    public void testEA(){
+        this.makeGraph2();
 
-
+        BFS<SimpleVertex, SimpleEdge> bfs3 = new BFS<>();
+        List<SimpleEdge> path3 = bfs3.getPath(this.graph2, this.e, this.a);
+        assertEquals(SimpleGraph.getTotalEdgeWeight(path3), 0.0, DELTA);
+        assertEquals(path3.size(), 0);
+    }
 }
