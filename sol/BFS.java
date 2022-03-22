@@ -57,12 +57,13 @@ public class BFS<V, E> implements IBFS<V, E> {
                 continue;
             }
             edgesVisited.add(currentPath);
+            queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
             if(!this.hashMap.containsKey(graph.getEdgeTarget(currentPath))){
                 this.hashMap.put(graph.getEdgeTarget(currentPath), currentPath);
             }
             if((graph.getEdgeTarget(currentPath).equals(end))){
-                return addTransport(currentNode, start, transports, graph);
                 //queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
+                return addTransport(currentNode, start, transports, graph);
             }
         }
         return transports;
@@ -75,14 +76,5 @@ public class BFS<V, E> implements IBFS<V, E> {
             currentNode = graph.getEdgeSource(node);
         }
         return transports;
-    }
-
-    /**
-     * getCity By Name takes in a string name and returns and edge object of that city.
-     * @param name
-     * @return
-     */
-    public E getCityByName(String name){
-        return this.hashMap.get(name);
     }
 }

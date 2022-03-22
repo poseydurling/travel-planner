@@ -114,7 +114,7 @@ public class DijkstraTest {
         this.graph2.addEdge(this.b, new SimpleEdge(1, this.b, this.c));
         this.graph2.addEdge(this.c, new SimpleEdge(1, this.c, this.d));
         this.graph2.addEdge(this.d, new SimpleEdge(10, this.d, this.b));
-        this.graph2.addEdge(this.d, new SimpleEdge(10, this.c, this.e));
+        this.graph2.addEdge(this.d, new SimpleEdge(100, this.c, this.e));
         this.graph2.addEdge(this.d, new SimpleEdge(1, this.e, this.b));
     }
 

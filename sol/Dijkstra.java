@@ -53,7 +53,8 @@ public class Dijkstra<V, E> implements IDijkstra<V, E> {
             this.prevVertex.put(vertex, null);
             this.distanceFromStart.put(source, 0.0);
         }
-        Comparator<V> priorityQueueComparator = (V city1, V city2) -> this.distanceFromStart.get(city1).compareTo(this.distanceFromStart.get(city2));
+        Comparator<V> priorityQueueComparator = (V city1, V city2) ->
+                this.distanceFromStart.get(city1).compareTo(this.distanceFromStart.get(city2));
         PriorityQueue<V> priorityQueue = new PriorityQueue<>(priorityQueueComparator);
         priorityQueue.addAll(graph.getVertices());
         while (!priorityQueue.isEmpty()) {
@@ -62,10 +63,9 @@ public class Dijkstra<V, E> implements IDijkstra<V, E> {
                 V targetCity = graph.getEdgeTarget(outgoingEdge);
                 if (this.distanceFromStart.get(currentCity) + edgeWeight.apply(outgoingEdge) <
                         this.distanceFromStart.get(targetCity)) {
-                    distanceFromStart.replace(targetCity, this.distanceFromStart.get(currentCity)
+                    this.distanceFromStart.replace(targetCity, this.distanceFromStart.get(currentCity)
                             + edgeWeight.apply(outgoingEdge));
-                    this.prevVertex.put(targetCity, outgoingEdge);
-                    priorityQueue.remove(targetCity);
+                    this.prevVertex.replace(targetCity, outgoingEdge);
                     priorityQueue.add(targetCity);
                 }
             }

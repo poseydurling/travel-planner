@@ -218,7 +218,6 @@ public class BFSTest {
         assertEquals(bfs2.getPath(this.graph2, this.c, this.b), path2);
     }
 
-    //NOT WORKING
     @Test
     public void testDC(){
         this.makeGraph2();
@@ -229,7 +228,6 @@ public class BFSTest {
         assertEquals(path3.size(), 2);
     }
 
-    //NOT WORKING - test no possible paths
     @Test
     public void testEA(){
         this.makeGraph2();
