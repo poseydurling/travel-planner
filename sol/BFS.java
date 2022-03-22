@@ -53,7 +53,6 @@ public class BFS<V, E> implements IBFS<V, E> {
         while(!queue.isEmpty()){
             E currentPath = queue.poll();
             if(edgesVisited.contains(currentPath)){
-                //return new ArrayList<>();
                 continue;
             }
             edgesVisited.add(currentPath);
@@ -62,7 +61,6 @@ public class BFS<V, E> implements IBFS<V, E> {
                 this.hashMap.put(graph.getEdgeTarget(currentPath), currentPath);
             }
             if((graph.getEdgeTarget(currentPath).equals(end))){
-                //queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
                 return addTransport(currentNode, start, transports, graph);
             }
         }

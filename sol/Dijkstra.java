@@ -66,7 +66,7 @@ public class Dijkstra<V, E> implements IDijkstra<V, E> {
                     this.distanceFromStart.replace(targetCity, this.distanceFromStart.get(currentCity)
                             + edgeWeight.apply(outgoingEdge));
                     this.prevVertex.replace(targetCity, outgoingEdge);
-                    priorityQueue.add(targetCity);
+                    priorityQueue.remove(targetCity);
                 }
             }
         }
