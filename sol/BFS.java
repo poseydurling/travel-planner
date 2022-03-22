@@ -53,17 +53,22 @@ public class BFS<V, E> implements IBFS<V, E> {
         while(!queue.isEmpty()){
             E currentPath = queue.poll();
             if(edgesVisited.contains(currentPath)){
-                return new ArrayList<>();
-                //continue;
+                //return new ArrayList<>();
+                continue;
             }
             edgesVisited.add(currentPath);
             if(!this.hashMap.containsKey(graph.getEdgeTarget(currentPath))){
                 this.hashMap.put(graph.getEdgeTarget(currentPath), currentPath);
             }
-            if(!(graph.getEdgeTarget(currentPath).equals(end))){
-                queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
+            if((graph.getEdgeTarget(currentPath).equals(end))){
+                return addTransport(currentNode, start, transports, graph);
+                //queue.addAll(graph.getOutgoingEdges(graph.getEdgeTarget(currentPath)));
             }
         }
+        return transports;
+    }
+
+    public LinkedList<E> addTransport(V currentNode, V start, LinkedList<E> transports, IGraph<V, E> graph){
         while(currentNode != start){
             E node = this.hashMap.get(currentNode);
             transports.addFirst(node);

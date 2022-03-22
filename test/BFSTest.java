@@ -112,10 +112,8 @@ public class BFSTest {
         this.graph2.addEdge(this.b, new SimpleEdge(1, this.b, this.c));
         this.graph2.addEdge(this.c, new SimpleEdge(1, this.c, this.d));
         this.graph2.addEdge(this.d, new SimpleEdge(1, this.d, this.b));
-        this.graph2.addEdge(this.d, new SimpleEdge(1, this.c, this.e));
-        this.graph2.addEdge(this.d, new SimpleEdge(1, this.e, this.b));
-
-        // do we need to do other weights?
+        this.graph2.addEdge(this.c, new SimpleEdge(1, this.c, this.e));
+        this.graph2.addEdge(this.e, new SimpleEdge(1, this.e, this.b));
     }
 
     /**
