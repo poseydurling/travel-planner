@@ -49,10 +49,10 @@ public class Dijkstra<V, E> implements IDijkstra<V, E> {
     public List<E> getShortestPath(IGraph<V, E> graph, V source, V destination,
                                    Function<E, Double> edgeWeight) {
         for (V vertex : graph.getVertices()) {
-            this.distanceFromStart.put(vertex, 1000000.0);
+            this.distanceFromStart.put(vertex, Double.MAX_VALUE);
             this.prevVertex.put(vertex, null);
-            this.distanceFromStart.put(source, 0.0);
         }
+        this.distanceFromStart.put(source, 0.0);
         Comparator<V> priorityQueueComparator = (V city1, V city2) ->
                 this.distanceFromStart.get(city1).compareTo(this.distanceFromStart.get(city2));
         PriorityQueue<V> priorityQueue = new PriorityQueue<>(priorityQueueComparator);
@@ -61,12 +61,13 @@ public class Dijkstra<V, E> implements IDijkstra<V, E> {
             V currentCity = priorityQueue.poll();
             for (E outgoingEdge : graph.getOutgoingEdges(currentCity)) {
                 V targetCity = graph.getEdgeTarget(outgoingEdge);
-                if (this.distanceFromStart.get(currentCity) + edgeWeight.apply(outgoingEdge) <
-                        this.distanceFromStart.get(targetCity)) {
-                    this.distanceFromStart.replace(targetCity, this.distanceFromStart.get(currentCity)
-                            + edgeWeight.apply(outgoingEdge));
-                    this.prevVertex.replace(targetCity, outgoingEdge);
+                double weight = edgeWeight.apply(outgoingEdge);
+                double newDistance = this.distanceFromStart.get(currentCity) + weight;
+                if (newDistance < this.distanceFromStart.get(targetCity)) {
+                    this.distanceFromStart.put(targetCity, newDistance);
+                    this.prevVertex.put(targetCity, outgoingEdge);
                     priorityQueue.remove(targetCity);
+                    priorityQueue.add(targetCity);
                 }
             }
         }
